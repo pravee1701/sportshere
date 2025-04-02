@@ -2,7 +2,7 @@ import http from 'http';
 import { Server } from 'socket.io';
 import dotenv from 'dotenv';
 import app from "./app.js";
-import matchSocketHandler from './websockets/matchSocket.js';
+import matchSocketHandler from './websockets/match.socket.js';
 
 
 dotenv.config();

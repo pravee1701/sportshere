@@ -1,4 +1,4 @@
-import { getMatchData } from '../services/matchService.js';
+import { getMatchData } from '../services/match.redis.service.js';
 
 
 const matchSocketHandler = (io) => {
