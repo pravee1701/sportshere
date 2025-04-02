@@ -1,7 +1,9 @@
 import { body , param } from 'express-validator';
 
 export const validateMatchId = [
-    param('matchId').isString().isLength({min:3}).withMessage('Match ID must be a string')
+    param('matchId')
+    .isUUID()
+    .withMessage('Match ID must be a valid UUID')
 ]
 
 export const validateMatchData = [

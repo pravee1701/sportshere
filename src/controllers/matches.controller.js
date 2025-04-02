@@ -1,12 +1,17 @@
 import { saveMatchData, getMatchData, deleteMatchData } from '../services/matchService.js';
 import { sendApiResponse } from '../utils/common.utils.js';
+import { v4 as uuidv4 } from 'uuid';
 
 
 export const createOrUpdateMatch = async (req, res) => {
-  const { matchId } = req.params;
+  let { matchId } = req.params;
   const matchData = req.body;
 
   try {
+
+    if(!matchId){
+      matchId = uuidv4();
+    }
     await saveMatchData(matchId, matchData);
     sendApiResponse(res, 200, true, 'Match data saved successfully');
   } catch (error) {
