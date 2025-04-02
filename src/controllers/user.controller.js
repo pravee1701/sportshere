@@ -1,5 +1,3 @@
-import bcypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import { sendApiResponse } from "../utils/common.utils.js";
 import userModel from '../models/user.model.js';
 import { createUser } from '../services/user.service.js';
