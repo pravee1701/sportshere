@@ -5,6 +5,7 @@ import CookieParser from 'cookie-parser';
 import matchesRoute from './routes/matches.route.js';
 import connectDB from './config/db.js';
 import usersRoutes from './routes/user.route.js';
+import teamRoutes from './routes/teams.route.js'
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use(CookieParser());
 
 app.use('/api/v1/matches', matchesRoute);
 app.use("/api/v1/user", usersRoutes);
+app.use("/api/v1/team", teamRoutes)
 
 
 
