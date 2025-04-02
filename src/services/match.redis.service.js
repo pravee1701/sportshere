@@ -24,9 +24,10 @@ export const getMatchData  = async (matchId) =>{
 
 export const deleteMatchData = async (matchId) => {
     try {
-        await redisClient.del(`match:${matchId}`);
         console.log(`Match data deleted for match ID: ${matchId}`);
+        return await redisClient.del(`match:${matchId}`);
     } catch (error) {
         console.error(`Error deleting match data:`, error);
+        return null
     }
 }

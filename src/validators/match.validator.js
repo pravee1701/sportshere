@@ -1,4 +1,4 @@
-import { body , param } from 'express-validator';
+import { body , param, query } from 'express-validator';
 
 export const validateMatchId = [
     param('matchId')
@@ -14,5 +14,4 @@ export const validateMatchData = [
     body('status')
       .isIn(['ongoing', 'completed', 'scheduled'])
       .withMessage('Status must be one of: ongoing, completed, scheduled'),
-    body('startTime').isISO8601().withMessage('Start time must be a valid ISO 8601 date'),
   ];
