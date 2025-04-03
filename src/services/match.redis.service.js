@@ -13,7 +13,6 @@ export const saveMatchData = async (matchId, data) =>{
 export const getMatchData  = async (matchId) =>{
     try {
         const data = await redisClient.get(`match:${matchId}`);
-
         return data ? JSON.parse(data) : null;
     } catch (error) {
         console.error('Error retrieving match data:', error);

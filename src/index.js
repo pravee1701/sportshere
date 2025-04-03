@@ -1,25 +1,17 @@
 import http from 'http';
-import { Server } from 'socket.io';
 import dotenv from 'dotenv';
 import app from "./app.js";
-import matchSocketHandler from './websockets/match.socket.js';
+import { initializeWebSocketServer } from './websockets/websocket.js';
 
 
 dotenv.config();
 
 const server = http.createServer(app);
 
-const io = new Server(server, {
-    cors: {
-        origin: '*',
-        methods: ['GET', 'POST'],
-    }
-
-});
 
 
-matchSocketHandler(io);
 
+initializeWebSocketServer(server);
 
 
 const PORT = process.env.PORT || 8080;

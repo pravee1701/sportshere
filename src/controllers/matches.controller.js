@@ -3,6 +3,7 @@ import { deleteCompletedMatchFromDB, getCompletedMatchesFromDB, getCompletedMatc
 import { saveMatchData, getMatchData, deleteMatchData } from '../services/match.redis.service.js';
 import { sendApiResponse } from '../utils/common.utils.js';
 import { v4 as uuidv4 } from 'uuid';
+import { publisher } from '../websockets/redisPUbSub.js';
 
 
 export const createMatch = async (req, res) => {
@@ -37,11 +38,14 @@ export const updateMatch = async (req, res) => {
       return sendApiResponse(res, 404, false, 'Match not found');
     }
 
-    await saveMatchData(matchId, { ...existingMatch, ...matchData });
-    
-    const response = await saveMatchToDB(matchId, { ...existingMatch, ...matchData });
+    const updatedMatch =  { ...existingMatch, ...matchData };
+    await saveMatchData(matchId, updatedMatch);
 
-    sendApiResponse(res, 200, true, 'Match updated successfully', response);
+    await saveMatchToDB(matchId, updatedMatch);
+
+    publisher.publish('match-updates', JSON.stringify({ matchId, ...updatedMatch }));
+
+    sendApiResponse(res, 200, true, 'Match updated successfully', updatedMatch);
   } catch (error) {
     sendApiResponse(res, 500, false, 'Failed to update match');
   }
@@ -52,7 +56,6 @@ export const getMatch = async (req, res) => {
 
   try {
     let matchData = await getMatchData(matchId);
-
     if (!matchData) {
       matchData = await getCompletedMatchFromDB(matchId);
     }
