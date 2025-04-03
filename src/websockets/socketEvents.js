@@ -30,9 +30,9 @@ export const handleSocketEvents = (io, socket) =>{
 
     // Handle match updates
 
-    socket.on('updateMatch', async (matchId, data) => {
+    socket.on('updateMatch', async (matchId, newData) => {
         try {
-            console.log(`Match updated: ${matchId}`, data);
+            console.log(`Match updated: ${matchId}`, newData);
 
             // Check if the Redis client is connected
             if (!publisher.isOpen) {
@@ -40,10 +40,25 @@ export const handleSocketEvents = (io, socket) =>{
                 return socket.emit('error', { message: 'Redis connection error' });
             }
 
+            // Fetch the existing match data from Redis
+            let existingData = await publisher.get(`match:${matchId}`);
+            existingData = existingData ? JSON.parse(existingData) : {};
+
+            // Merge the existing data with the new data
+            const updatedData = { ...existingData, ...newData };
+            // Store the merged data back in Redis
+            await publisher.set(`match:${matchId}`, JSON.stringify(updatedData));
+
+            // Validate and stringify the data before publishing
+            const payload = JSON.stringify({ matchId, data: updatedData });
+
             // Publish the update to Redis Pub/Sub
-            await publisher.publish('match-updates', JSON.stringify({ matchId, data }));
+            await publisher.publish('match-updates', payload);
+
             // Emit the update to all clients in the match room
-            io.to(matchId).emit('matchUpdate', data);
+            io.to(matchId).emit('matchUpdate', updatedData);
+
+            console.log(`Broadcasting update for match: ${matchId}`, updatedData);
         } catch (error) {
             console.error('Error updating match:', error);
             socket.emit('error', { message: 'Failed to update match' });

@@ -2,17 +2,22 @@ import matchModel from "../models/match.model.js";
 
 export const saveCompleteMatchToDB = async (matchId, matchData) => {
     try {
-        matchData.status = "completed"
+        // Ensure the match is marked as completed
+        matchData.status = "completed";
         matchData.endTime = new Date();
-        const match = await matchModel.create({
-            matchId,
-            ...matchData
-        });
-        console.log("Match created:", match);
-        return match
+
+        // Update the match if it exists, or create a new one
+        const match = await matchModel.findOneAndUpdate(
+            { matchId }, 
+            { $set: matchData }, 
+            { new: true, upsert: true } 
+        );
+
+        console.log("Match saved to DB:", match);
+        return match;
     } catch (error) {
-        console.error("Error creating match:", error.message);
-        throw new Error("Failed to save data in db")
+        console.error("Error saving match to DB:", error.message);
+        throw new Error(`Failed to save match to DB: ${error.message}`);
     }
 };
 
