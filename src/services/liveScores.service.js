@@ -43,7 +43,6 @@ export const getLiveScores = async (sport, date = new Date()) => {
             throw new Error(`Unsupported sport: ${sport}`);
         }
 
-        console.log("response===>", response.data.response[0]);
         const liveMatches = response.data.response.map((match) => ({
             originalMatchId: match.id ? match.id : match.fixture?.id,
             team1: match.teams?.home?.name || 'Unknown',
@@ -51,16 +50,15 @@ export const getLiveScores = async (sport, date = new Date()) => {
             score1: sport === "football" ? match.goals?.home || 0 : match.scores?.home?.total || 0,
             score2: sport === "football" ? match.goals?.away || 0 : match.scores?.away?.total || 0,
             status: match.status?.short === 'LIVE' ? 'ongoing' : match.status?.short?.toLowerCase() || 'unknown',
-            startTime: match.fixture?.date || null,
+            startTime: match.fixture?.date ? match.fixture.date : match.date,
             endTime: match.status?.short === 'FT' ? new Date() : null,
         }));
 
-        console.log("liveMatches===>", liveMatches[0]);
         // Save live matches to Redis with merging
         await Promise.all(
             liveMatches.map(async (match) => {
+                console.log("matches===>",match)
                 const redisKeyForOriginalId = `match:${match.originalMatchId}`;
-                console.log("match===>", match);
                 try {
                     // Check if the match already exists in Redis
                     const existingData = await redisClient.get(redisKeyForOriginalId);
@@ -79,10 +77,8 @@ export const getLiveScores = async (sport, date = new Date()) => {
 
                     // Use the matchId as the Redis key
                     const redisKey = `match:${matchId}`;
-
                     // Merge existing data with the new data
                     const updatedData = { matchId, ...match };
-                    console.log("===>", updatedData);
                     // Save the merged data back to Redis
                     await redisClient.set(redisKey, JSON.stringify(updatedData));
                 } catch (err) {

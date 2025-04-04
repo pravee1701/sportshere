@@ -1,5 +1,5 @@
-import { broadcastToRoom } from "../websockets/websocket";
-import { getLiveScores } from "./liveScores.service";
+import { broadcastToRoom } from "../websockets/websocket.js";
+import { getLiveScores } from "./liveScores.service.js";
 
 
 const SUPPORTED_SPORTS = ['football', 'basketball'];
