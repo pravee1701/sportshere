@@ -42,7 +42,7 @@ export const getLiveScores = async (sport, date = new Date()) => {
         } else {
             throw new Error(`Unsupported sport: ${sport}`);
         }
-
+        console.log("response===>", response.data.response[1])
         const liveMatches = response.data.response.map((match) => ({
             originalMatchId: match.id ? match.id : match.fixture?.id,
             team1: match.teams?.home?.name || 'Unknown',
@@ -57,7 +57,7 @@ export const getLiveScores = async (sport, date = new Date()) => {
         // Save live matches to Redis with merging
         await Promise.all(
             liveMatches.map(async (match) => {
-                console.log("matches===>",match)
+                // console.log("matches===>",match)
                 const redisKeyForOriginalId = `match:${match.originalMatchId}`;
                 try {
                     // Check if the match already exists in Redis

@@ -35,6 +35,9 @@ const matchSchema = new mongoose.Schema(
     endTime: {
       type: Date,
     },
+    predictions: {
+      type: Object, // Store prediction data
+    },
   },
   { timestamps: true } 
 );

@@ -48,3 +48,23 @@ export const saveMatchToDB = async (matchId, matchData) => {
         throw error;
     }
 };
+
+export const saveMatchPrediction = async (matchId, prediction) => {
+    try {
+        const match = await matchModel.findOneAndUpdate(
+            { matchId },
+            { $set: { predictions: prediction } },
+            { new: true }
+        )
+
+        if(!match){
+            console.error(`Match with ID ${matchId} not found`);
+            return null;
+        }
+
+        return match;
+    } catch (error) {
+        console.error(`Error saving match prediction: ${error.message}`);
+        throw error;
+    }
+}
